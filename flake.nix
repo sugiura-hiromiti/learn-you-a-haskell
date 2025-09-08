@@ -23,6 +23,7 @@
           buildInputs = with pkgs; [
             # Core build tools
             ghc
+            haskell-language-server
           ];
 
           shellHook = ''
