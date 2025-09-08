@@ -1,3 +1,6 @@
+import Data.Bifunctor qualified
+import Distribution.Compat.Prelude
+
 doubleMe x = x + x
 
 doubleUs x y = doubleMe x + doubleMe y
@@ -32,3 +35,46 @@ oddFilter xxs = [[x | x <- xs, odd x] | xs <- xxs]
 
 rightTriangles :: Int -> [(Int, Int, Int)]
 rightTriangles limit = [(a, b, c) | c <- [1 .. limit], b <- [1 .. c], a <- [1 .. b], a ^ 2 + b ^ 2 == c ^ 2]
+
+len' :: (Num a) => [b] -> a
+len' [] = 0
+len' (_ : xs) = 1 + len' xs
+
+cap' :: String -> String
+cap' "" = "empty"
+cap' bind@(x : xs) = "the first letter of " ++ bind ++ " is " ++ [x]
+
+densityTell :: (RealFloat a) => a -> String
+densityTell dnsty
+   | dnsty < 1.2 = "light"
+   | dnsty <= 1000.0 = "med"
+   | otherwise = "sink"
+
+densityTell' :: (RealFloat a) => a -> a -> String
+densityTell' mass vol
+   | density < air = densityTell (1 / density)
+   | density <= water = densityTell vol
+   | otherwise = densityTell density
+  where
+   density = mass / vol
+   air = 1.2
+   water = 1000.0
+
+compare' :: (Ord a) => a -> a -> Ordering
+a `compare'` b
+   | a > b = GT
+   | a == b = EQ
+   | otherwise = LT
+
+densityTell'' :: String -> String
+densityTell'' input
+   | Just density <- readMaybe input, density < air = "flow"
+   | otherwise = "sink"
+  where
+   air = 1.2
+
+initials' :: String -> String -> String
+initials' firstname lastname = f : [l]
+  where
+   (f : _) = firstname
+   (l : _) = lastname
