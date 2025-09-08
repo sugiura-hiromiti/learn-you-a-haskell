@@ -31,7 +31,7 @@
             echo -e "System: ${system}"
             echo -e "Available tools:"
             echo -e "  - ghc: $(which ghc 2>/dev/null || echo 'not found')"
-            echo -e "\n\n\033[0m"
+            echo -e "\n\033[0m"
           '';
         };
       }
