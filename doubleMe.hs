@@ -78,3 +78,51 @@ initials' firstname lastname = f : [l]
   where
    (f : _) = firstname
    (l : _) = lastname
+
+densityTell''' :: (RealFloat a) => [(a, a)] -> [a]
+densityTell''' xs = [density mass vol | (mass, vol) <- xs]
+  where
+   density mass vol = mass / vol
+
+cvlinder :: (RealFloat a) => a -> a -> a
+cvlinder r h =
+   let
+      vertSide = 2 * r * h * pi
+      horSide = r ^ 2 * pi
+    in
+      vertSide + 2 * horSide
+
+squares :: (Num a) => [a] -> [a]
+squares [] = []
+squares (x : y) = let square x = x * x in square x : squares y
+
+take' :: (Num a, Ord a) => a -> [i] -> [i]
+take' n _ | n <= 0 = []
+take' n [] = []
+take' n (x : xs) = x : take' (n - 1) xs
+
+quicksort :: (Ord a) => [a] -> [a]
+quicksort [] = []
+quicksort (x : xs) =
+   let (smallers, largers) = (quicksort [a | a <- xs, a < x], quicksort [a | a <- xs, a >= x])
+    in smallers ++ [x] ++ largers
+
+divideByTen :: (Floating a) => a -> a
+divideByTen = (/ 10)
+
+zipWith' :: (a -> b -> c) -> [a] -> [b] -> [c]
+zipWith' _ [] _ = []
+zipWith' _ _ [] = []
+zipWith' f (x : xs) (y : ys) = f x y : zipWith' f xs ys
+
+flip' :: (a -> b -> c) -> (b -> a -> c)
+flip' f = g
+  where
+   g x y = f y x
+
+flip'' :: (a -> b -> c) -> b -> a -> c
+flip'' f x y = f y x
+
+map' :: (a -> b) -> [a] -> [b]
+map' _ [] = []
+map' f (x : xs) = f x : map f xs
