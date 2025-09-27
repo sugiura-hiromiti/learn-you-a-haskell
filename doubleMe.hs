@@ -140,3 +140,15 @@ filter' f (x : xs)
   where
    remain = filter' f xs
 
+largestDivisible :: (Integral a) => a
+largestDivisible = Prelude.head (filter' p [100_000, 99_999 ..])
+  where
+   p x = x `mod` 3829 == 0
+
+takeWhile' :: (a -> Bool) -> [a] -> [a]
+takeWhile' _ [] = []
+takeWhile' f (x : xs)
+   | f x = x : remnant
+   | otherwise = []
+  where
+   remnant = takeWhile' f xs
