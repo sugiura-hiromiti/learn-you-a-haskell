@@ -104,8 +104,9 @@ take' n (x : xs) = x : take' (n - 1) xs
 quicksort :: (Ord a) => [a] -> [a]
 quicksort [] = []
 quicksort (x : xs) =
-   let (smallers, largers) = (quicksort [a | a <- xs, a < x], quicksort [a | a <- xs, a >= x])
-    in smallers ++ [x] ++ largers
+   let smallerSorted = quicksort (filter' (x >=) xs)
+       largerSorted = quicksort (filter' (> x) xs)
+    in smallerSorted ++ [x] ++ largerSorted
 
 divideByTen :: (Floating a) => a -> a
 divideByTen = (/ 10)
@@ -126,3 +127,16 @@ flip'' f x y = f y x
 map' :: (a -> b) -> [a] -> [b]
 map' _ [] = []
 map' f (x : xs) = f x : map f xs
+
+filter' :: (a -> Bool) -> [a] -> [a]
+filter' _ [] = []
+filter' f (x : xs)
+   --    let remain = filter' f xs
+   --     in if f x then x : remain else remain
+   --
+   -- pattern matching is better than procedualistic implementation above
+   | f x = x : remain
+   | otherwise = remain
+  where
+   remain = filter' f xs
+
