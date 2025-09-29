@@ -140,8 +140,11 @@ filter' f (x : xs)
   where
    remain = filter' f xs
 
-largestDivisible :: (Integral a) => a
-largestDivisible = Prelude.head (filter' p [100_000, 99_999 ..])
+largestDivisible :: (Integral a) => Maybe a
+largestDivisible =
+   case filter' p [100_000, 99_999 ..] of
+      x : _ -> Just x
+      [] -> Nothing
   where
    p x = x `mod` 3829 == 0
 
@@ -152,3 +155,131 @@ takeWhile' f (x : xs)
    | otherwise = []
   where
    remnant = takeWhile' f xs
+
+collatz :: (Integral a) => a -> [a]
+collatz 1 = [1]
+collatz x
+   | even x = x : collatz (x `div` 2)
+   | odd x = x : collatz (x * 3 + 1)
+
+numLongChains :: (Num a) => a
+numLongChains = fromIntegral (length (filter longerThan15 (map collatz [1 .. 100])))
+  where
+   longerThan15 xs = length xs > 15
+
+numLongChains' = fromIntegral (length (filter (\xs -> length xs > 15) (map collatz [1 .. 100])))
+
+listOfFuncs = map (*) [0 ..]
+
+foldl'' :: (a -> b -> b) -> [a] -> b -> b
+foldl'' _ [] b = b
+foldl'' f (x : xs) b = foldl'' f xs (f x b)
+
+sum' :: (Num a) => [a] -> a
+sum' = flip (foldl'' (+)) 0
+
+elem' :: (Eq a) => a -> [a] -> Bool
+elem' x = foldl (\acc y -> x == y || acc) False
+elemr' :: (Eq a) => a -> [a] -> Bool
+elemr' x = foldr (\y acc -> x == y || acc) False
+
+-- >>> elemr' 3 [1,3,5]
+-- True
+-- >>> elemr' 0 [1,3,5]
+-- False
+
+-- >>> foldr (+) 3 [1,2,3]
+-- 9
+-- >>> foldl (+) 3 [1,2,3]
+-- 9
+
+mapr' :: (a -> b) -> [a] -> [b]
+mapr' f = map (\x -> f x)
+
+-- >>> mapr' (+3) [1,2,3]
+-- [4,5,6]
+
+mapl' :: (a -> b) -> [a] -> [b]
+-- >>> 4:[]
+-- [4]
+
+mapl' f = foldl (\acc x -> f x : acc) []
+
+-- >>> mapl' (+3) [1,2,3]
+-- [6,5,4]
+
+-- >>> mapl' (+3) []
+-- []
+
+foldr' :: (b -> a -> b) -> b -> [a] -> b
+foldr' _ b [] = b
+foldr' f b (x : xs) = f (foldr' f b xs) x
+
+-- >>> foldr' (+) 3 [1,2,3] == foldr (+) 3 [1,2,3]
+-- True
+
+mapl'' :: (a -> b) -> [a] -> [b]
+mapl'' f xs = foldl'' (\x acc -> f x : acc) xs []
+
+-- >>> mapl' (+3) [1,2,3] == mapl'' (+3) [1,2,3]
+-- >>> mapl' (+3) [] == mapl'' (+3) []
+-- True
+-- True
+
+mapr'' :: (a -> b) -> [a] -> [b]
+mapr'' f = foldr' (\acc x -> f x : acc) []
+
+-- >>> mapr' (+3) [1,2,3] ==  mapr'' (+3) [1,2,3]
+-- >>> map (+3) [1,2,3] ==  mapr'' (+3) [1,2,3]
+-- True
+-- True
+
+--  NOTE: One big difference is that right folds work on infinite lists,
+--  whereas left ones don't!
+--  To put it plainly, if you take an infinite list at some point
+--  and you fold it up from the right,
+--  you'll eventually reach the beginning of the list.
+--  However, if you take an infinite list at a point and you try to fold it up from the left,
+--  you'll never reach an end!
+
+-- NOTE: When making a fold,
+-- think about how it acts on an empty list.
+-- If the function doesn't make sense when given an empty list,
+-- you can probably use a foldl1 or foldr1 to implement it.
+
+sqrtSums :: Int -> Int
+sqrtSums limit =
+   let limit' = fromIntegral limit
+    in length (takeWhile (< limit') sqrtSumStream) + 1
+
+-- >>> sqrtSums 1000
+-- 131
+
+sqrtSumStream = scanl1 (+) (map (sqrt . fromIntegral) [1 ..])
+
+-- >>>  sqrtSumStream !! 132
+-- >>>  sqrtSumStream !! 130
+-- >>>  sqrtSumStream !! 129
+-- 1028.115891422155
+-- 1005.0942035344083
+-- 993.6486803921487
+
+-- >>> map ($ 3) [(+4), (*10), (^2), sqrt]
+-- [7.0,30.0,9.0,1.7320508075688772]
+
+-- >>> map (negate . abs) [1,2,3,4,-1,-2,-3,-4]
+-- [-1,-2,-3,-4,-1,-2,-3,-4]
+
+-- >>> map (negate . sum . Prelude.tail) [[1..5],[3..6],[5..7]]
+-- [-14,-15,-13]
+-- >>> sum . replicate 5 . max 6.7 $ 8.9
+-- 44.5
+
+-- >>> replicate 5 7
+-- [7,7,7,7,7]
+
+--  >>> sum [1,1,1,1]
+-- 4
+
+-- >>> replicate 100 . product . map ( *3 ) . zipWith max [1,2,3,4,5] $ [4,5,6,7,8]
+-- [1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960,1632960]
